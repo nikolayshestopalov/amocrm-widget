@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body { margin: 0; padding: 15px; font-family: Arial; text-align: center; background: transparent; }
+        .value { font-size: 28px; font-weight: bold; color: #ffffff; margin: 10px 0; }
+        .label { font-size: 14px; color: #ffffff; margin-bottom: 8px; font-weight: bold; }
+        .timestamp { font-size: 11px; color: #cccccc; margin-top: 5px; }
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            animation: spin 1s linear infinite;
+            margin: 5px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="label">Сборы</div>
+    <div class="value" id="value">
+        <div class="loader"></div>
+    </div>
+    <div class="timestamp" id="timestamp"></div>
+
+    <script>
+        function loadData() {
+            // Показываем loader
+            document.getElementById('value').innerHTML = '<div class="loader"></div>';
+            
+            const url = 'https://script.google.com/macros/s/AKfycbyP1SzqUDqF9gz5G3D31oZTfNFK62gPO1l-PVmwYmaoS7dbaxVZMnI0YNIRmJZ3y4MWtw/exec?t=' + Date.now();
+            
+            fetch(url)
+                .then(response => response.json()) // Теперь используем .json()
+                .then(data => {
+                    // Извлекаем только число из data.data
+                    document.getElementById('value').textContent = data.data;
+                    document.getElementById('timestamp').textContent = 
+                        'Обновлено: ' + new Date().toLocaleTimeString('ru-RU');
+                })
+                .catch(error => {
+                    document.getElementById('value').textContent = 'Ошибка';
+                    console.error('Ошибка:', error);
+                });
+        }
+
+        // Загружаем сразу и каждые 5 минут
+        loadData();
+        setInterval(loadData, 300000);
+        
+        // Обновление по клику
+        document.getElementById('value').addEventListener('click', function() {
+            loadData();
+        });
+    </script>
+</body>
+</html>
